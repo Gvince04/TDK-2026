@@ -31,6 +31,6 @@ for session_idx in range(4):
         print(f" - Expected gaze row count: {expected_gaze_rows}")
         
         if session_idx == 0:
-            print(f" - A szemkövetés oszlopai: {list(df_gaze.columns)[:5]} ...")
+            print(f" - Eye gaze columns: {list(df_gaze.columns)[:5]} ...")
     else:
-        print(f" - Hiba: Nem található a fájl: {gaze_path}")
+        print(f" - Error: File not found: {gaze_path}")
