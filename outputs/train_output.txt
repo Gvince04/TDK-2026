@@ -1,0 +1,74 @@
+--- Adatok betöltése ---
+Eredeti címkék eloszlása (min/max/medián): 1.0 / 9.0 / 6.0
+Bináris eloszlás: 1953 Alacsony (0), 2088 Magas (1)
+
+Összesen 20 résztvevő a LOSO validációhoz.
+Használt eszköz: cuda
+
+[ LOSO Iteráció: Tesztelés a 1026 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5052 | Macro-F1: 0.1034 | AUROC: 0.7614
+
+[ LOSO Iteráció: Tesztelés a 1106 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.0962 | AUROC: 0.3643
+
+[ LOSO Iteráció: Tesztelés a 1175 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.4829 | Macro-F1: 0.4025 | AUROC: 0.5085
+
+[ LOSO Iteráció: Tesztelés a 1194 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.2653 | AUROC: 0.5801
+
+[ LOSO Iteráció: Tesztelés a 1337 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.4178 | AUROC: 0.5268
+
+[ LOSO Iteráció: Tesztelés a 1390 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.3010 | AUROC: 0.4978
+
+[ LOSO Iteráció: Tesztelés a 1419 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.3065 | AUROC: 0.4952
+
+[ LOSO Iteráció: Tesztelés a 1544 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.3333 | AUROC: 0.4405
+
+[ LOSO Iteráció: Tesztelés a 1624 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.3915 | AUROC: 0.5500
+
+[ LOSO Iteráció: Tesztelés a 1629 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.2664 | AUROC: 0.3715
+
+[ LOSO Iteráció: Tesztelés a 1674 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.0446 | AUROC: 0.6494
+
+[ LOSO Iteráció: Tesztelés a 1688 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.3639 | AUROC: 0.7056
+
+[ LOSO Iteráció: Tesztelés a 1717 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.3394 | AUROC: 0.4927
+
+[ LOSO Iteráció: Tesztelés a 1818 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.3077 | AUROC: 0.4831
+
+[ LOSO Iteráció: Tesztelés a 1892 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.4667 | AUROC: 0.5059
+
+[ LOSO Iteráció: Tesztelés a 1929 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.2313 | AUROC: 0.5123
+
+[ LOSO Iteráció: Tesztelés a 1933 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.3077 | AUROC: 0.4082
+
+[ LOSO Iteráció: Tesztelés a 1936 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.3136 | AUROC: 0.4091
+
+[ LOSO Iteráció: Tesztelés a 1953 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.4000 | AUROC: 0.6422
+
+[ LOSO Iteráció: Tesztelés a 1981 résztvevőn ]
+ -> Eredmények: Bal. Acc: 0.5000 | Macro-F1: 0.4745 | AUROC: 0.6650
+
+=======================================================
+VÉGLEGES LOSO EREDMÉNYEK (Zero-shot generalizáció)
+=======================================================
+Átlagos Balanced Accuracy: 0.4994 ± 0.0039
+Átlagos Macro-F1 Score:    0.3067 ± 0.1139
+Átlagos AUROC Score:       0.5285 ± 0.1071
+=======================================================

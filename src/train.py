@@ -1,11 +1,18 @@
+import sys
+import os
+
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from sklearn.metrics import balanced_accuracy_score, f1_score, roc_auc_score
-from model import GatedFusionModel
 
+from models.gated_fusion import GatedFusionModel
 
 class CLAREDataset(Dataset):
     def __init__(self, dynamic_data, static_data, labels):
@@ -23,7 +30,7 @@ class CLAREDataset(Dataset):
 
 def main():
     print("--- Adatok betöltése ---")
-    data = np.load('processed_dataset.npz', allow_pickle=True)
+    data = np.load('data/processed/processed_dataset.npz', allow_pickle=True)
     X_dynamic = data['X_dynamic']
     X_static = data['X_static']
     y_raw = data['y']
