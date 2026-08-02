@@ -12,3 +12,6 @@ wheels/
 # Dataset
 data/*
 processed_dataset.npz
+
+# Ignore
+ignore
