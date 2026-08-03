@@ -28,7 +28,7 @@ class CLAREDataset(Dataset):
 
 def main():
     print("--- Adatok betöltése ---")
-    data_path = os.path.join(project_root, 'data', 'processed', 'processed_dataset.npz')
+    data_path = os.path.join(project_root, 'data', 'processed', 'processed_dataset_calibrated.npz')
     data = np.load(data_path, allow_pickle=True)
     
     X_dynamic = data['X_dynamic']  

@@ -28,7 +28,7 @@ class CLAREDataset(Dataset):
 
 def main():
     print("--- Adatok betöltése ---")
-    data_path = os.path.join(project_root, 'data', 'processed', 'processed_dataset.npz')
+    data_path = os.path.join(project_root, 'data', 'processed', 'processed_dataset_calibrated.npz')
     data = np.load(data_path, allow_pickle=True)
     
     X_dynamic = data['X_dynamic']  
@@ -59,10 +59,6 @@ def main():
         X_dyn_train = X_dynamic[train_mask].copy()
         X_dyn_test = X_dynamic[test_mask].copy()
 
-        # =========================================================
-        # CRITICAL FIX: Z-SCORE NORMALIZÁLÁS (Csatornánként)
-        # Kisámoljuk az átlagot és szórást CSAK a tanító adatokon!
-        # =========================================================
         mean = X_dyn_train.mean(axis=(0, 1), keepdims=True)
         std = X_dyn_train.std(axis=(0, 1), keepdims=True) + 1e-8 # 1e-8 a 0-val való osztás ellen
 
@@ -84,7 +80,7 @@ def main():
         
         # Súlyozott veszteségfüggvény az esetleges imbalansz ellen
         criterion = nn.BCEWithLogitsLoss() 
-        optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=1e-4) # Finomabb LR + L2 regularizáció
+        optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=1e-4)
 
         # --- TANÍTÁS ---
         epochs = 25
