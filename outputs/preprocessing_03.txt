@@ -1,0 +1,6 @@
+--- Fiziológiai Kalibráció (TEPR) Indítása 20 résztvevőn ---
+
+--- FELDOLGOZÁS VÉGE ---
+Létrehozott Tenzor alakja: (2111, 500, 4)
+A kalibrált pupillaméretek átlaga: -0.0298 (Ennek kell 0-hoz közelinek lennie!)
+Adatok sikeresen mentve ide: /home/vince/tanszek/tdk_2026/data/processed/processed_dataset_calibrated.npz
