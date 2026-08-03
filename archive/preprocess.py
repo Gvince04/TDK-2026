@@ -1,42 +1,66 @@
 import os
-from glob import glob
 import pandas as pd
+import numpy as np
+from scipy.signal import resample
 
-BASE_DIR = "./data"
+base_dir = './data'
+target_length = 500
+window_size_sec = 10.0
 
-gaze_dir   = os.path.join(BASE_DIR, "Gaze")
-labels_dir = os.path.join(BASE_DIR, "Labels")
+X_dynamic = []
+X_static = []
+y_targets = []
+subject_ids = []
 
-participants = [ d for d in os.listdir(gaze_dir) if os.path.isdir(os.path.join(gaze_dir, d)) ]
-participants.sort()
+participants = sorted([d for d in os.listdir(os.path.join(base_dir, 'Gaze')) if os.path.isdir(os.path.join(base_dir, 'Gaze', d))])
+print(f"Starting preprocessing on {len(participants)} number of participants...\n")
 
-print(f"Found {len(participants)} participant's directory.")
-
-if len(participants) > 0:
-    test_p_id = participants[0]
-    print(f"Participant id: {test_p_id}")
-
-    gaze_files = sorted(glob(os.path.join(gaze_dir, test_p_id, '*exp*.csv')))
-
-    for gaze_file in gaze_files:
-        filename = os.path.basename(gaze_file)
+for participant_id in participants:
+    labels_path = os.path.join(base_dir, 'Labels', f'{participant_id}.csv')
+    if not os.path.exists(labels_path):
+        continue
         
-        label_file = os.path.join(labels_dir, test_p_id, filename.replace('gaze', 'label')) 
+    df_labels = pd.read_csv(labels_path)
+    
+    for session_idx in range(4):
+        gaze_path = os.path.join(base_dir, 'Gaze', participant_id, f'gaze_data_experiment_{session_idx}.csv')
         
-        print(f"\nLoading Session: {filename}")
-        
-        try:
-            df_gaze = pd.read_csv(gaze_file)
-            print(f" - Gaza data shape: {df_gaze.shape}")
+        if os.path.exists(gaze_path):
+            df_gaze = pd.read_csv(gaze_path)
+            session_labels = df_labels[f'level_{session_idx}'].dropna().values
             
-            if os.path.exists(label_file):
-                df_label = pd.read_csv(label_file)
-                print(f" - Labels shape: {df_label.shape}")
-            else:
-                print(" - Warning: No label file found!")
+            start_time = df_gaze['Timestamp'].iloc[0]
+            df_gaze['Timestamp_norm'] = df_gaze['Timestamp'] - start_time
+            
+            for i, label in enumerate(session_labels):
+                t_start = i * window_size_sec
+                t_end = (i + 1) * window_size_sec
                 
-        except Exception as e:
-            print(f"Error reading the file: {e}")
-            
-else:
-    print("No participants in the Gaze directory!")
+                mask = (df_gaze['Timestamp_norm'] >= t_start) & (df_gaze['Timestamp_norm'] < t_end)
+                window_df = df_gaze[mask]
+                
+                if not window_df.empty:
+                    features = window_df[['ET_PupilLeft', 'ET_PupilRight', 'ET_GazeLeftx', 'ET_GazeLefty']].values
+                    
+                    features = np.nan_to_num(features, nan=0.0)
+                    
+                    features_resampled = resample(features, target_length, axis=0)
+                    
+                    X_dynamic.append(features_resampled)
+                    X_static.append(session_idx)
+                    y_targets.append(label)
+                    subject_ids.append(participant_id)
+
+print("\n--- Preprocessing Finished ---")
+X_dynamic = np.array(X_dynamic)
+X_static = np.array(X_static)
+y_targets = np.array(y_targets)
+subject_ids = np.array(subject_ids)
+
+print(f"X_dynamic shape: {X_dynamic.shape}")
+print(f"X_static shape: {X_static.shape}")
+print(f"y_targets shape: {y_targets.shape}")
+
+print("Saving data (processed_dataset.npz)...")
+np.savez('processed_dataset.npz', X_dynamic=X_dynamic, X_static=X_static, y=y_targets, subjects=subject_ids)
+print("Save success!")
