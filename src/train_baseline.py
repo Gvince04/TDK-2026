@@ -79,7 +79,9 @@ def main():
         model = BaselineModel(num_dynamic_features=4).to(device)
         
         # Súlyozott veszteségfüggvény az esetleges imbalansz ellen
-        criterion = nn.BCEWithLogitsLoss() 
+        pos_weight_val = sum(y_binary[train_mask] == 0) / sum(y_binary[train_mask] == 1)
+        pos_weight_tensor = torch.tensor([pos_weight_val], dtype=torch.float32).to(device)
+        criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight_tensor)
         optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=1e-4)
 
         # --- TANÍTÁS ---

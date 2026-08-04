@@ -1,0 +1,32 @@
+--- Adatok betöltése ---
+Adathalmaz: 2111 ablak, 20 alany.
+Címke küszöb: 5.0 -> 0-s osztály: 673, 1-es osztály: 1438
+Használt eszköz: cuda
+[1026] -> Bal. Acc: 0.1852 | Macro-F1: 0.1562 | AUROC: nan
+[1106] -> Bal. Acc: 1.0000 | Macro-F1: 1.0000 | AUROC: nan
+[1175] -> Bal. Acc: 0.5000 | Macro-F1: 0.3793 | AUROC: 0.8326
+[1194] -> Bal. Acc: 0.5000 | Macro-F1: 0.4375 | AUROC: 0.6429
+[1337] -> Bal. Acc: 0.5000 | Macro-F1: 0.1290 | AUROC: 0.3043
+[1390] -> Bal. Acc: 0.6049 | Macro-F1: 0.5872 | AUROC: 0.5755
+[1419] -> Bal. Acc: 0.5000 | Macro-F1: 0.4653 | AUROC: 0.1763
+[1544] -> Bal. Acc: 0.5000 | Macro-F1: 0.4109 | AUROC: 0.4759
+[1624] -> Bal. Acc: 0.5000 | Macro-F1: 0.3250 | AUROC: 0.7418
+[1629] -> Bal. Acc: 0.5000 | Macro-F1: 0.4751 | AUROC: 0.6957
+[1674] -> Bal. Acc: 0.5000 | Macro-F1: 0.4815 | AUROC: 0.6325
+[1688] -> Bal. Acc: 0.4632 | Macro-F1: 0.4631 | AUROC: 0.4488
+[1717] -> Bal. Acc: 0.5000 | Macro-F1: 0.4033 | AUROC: 0.6105
+[1818] -> Bal. Acc: 0.5751 | Macro-F1: 0.5278 | AUROC: 0.4926
+[1892] -> Bal. Acc: 0.4952 | Macro-F1: 0.3238 | AUROC: 0.4245
+[1929] -> Bal. Acc: 0.5000 | Macro-F1: 0.4706 | AUROC: 0.1806
+[1933] -> Bal. Acc: 0.5000 | Macro-F1: 0.4114 | AUROC: 0.5377
+[1936] -> Bal. Acc: 0.5661 | Macro-F1: 0.4257 | AUROC: 0.5393
+[1953] -> Bal. Acc: 0.5110 | Macro-F1: 0.4608 | AUROC: 0.4825
+[1981] -> Bal. Acc: 0.5000 | Macro-F1: 0.2603 | AUROC: 0.4630
+
+=======================================================
+VÉGLEGES LOSO EREDMÉNYEK (NORMALIZÁLT ADATOKKAL)
+=======================================================
+Átlagos Balanced Accuracy: 0.5200 ± 0.1348
+Átlagos Macro-F1 Score:    0.4297 ± 0.1717
+Átlagos AUROC Score:       0.5143 ± 0.1697
+=======================================================
