@@ -31,18 +31,21 @@ def main():
     data_path = os.path.join(project_root, 'data', 'processed', 'processed_dataset_calibrated.npz')
     data = np.load(data_path, allow_pickle=True)
     
-    X_dynamic = data['X_dynamic']  
+    X_dynamic = data['X_dynamic']
     X_static = data['X_static']
     y_raw = data['y']
     subjects = data['subjects']
 
-    # --- CÍMKE TRANSZFORMÁCIÓ ---
-    threshold = np.median(y_raw)
-    y_binary = (y_raw >= threshold).astype(int)
-    
+    y_binary = np.zeros_like(y_raw, dtype=int)
+    for subj in np.unique(subjects):
+        subj_mask = (subjects == subj)
+        subj_median = np.median(y_raw[subj_mask])
+        y_binary[subj_mask] = (y_raw[subj_mask] >= subj_median).astype(int)
+
     unique_subjects = np.unique(subjects)
+    
+    print(f"Alany-szintű binarizálás kész! 0-s osztály: {sum(y_binary==0)}, 1-es osztály: {sum(y_binary==1)}")
     print(f"Adathalmaz: {len(X_dynamic)} ablak, {len(unique_subjects)} alany.")
-    print(f"Címke küszöb: {threshold} -> 0-s osztály: {sum(y_binary==0)}, 1-es osztály: {sum(y_binary==1)}")
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Használt eszköz: {device}")
@@ -56,16 +59,15 @@ def main():
         train_mask = subjects != test_subject
         test_mask = subjects == test_subject
 
-        X_dyn_train = X_dynamic[train_mask].copy()
-        X_dyn_test = X_dynamic[test_mask].copy()
+        X_dyn_train = X_dynamic[train_mask][:, :, :2].copy()
+        X_dyn_test = X_dynamic[test_mask][:, :, :2].copy()
 
         mean = X_dyn_train.mean(axis=(0, 1), keepdims=True)
-        std = X_dyn_train.std(axis=(0, 1), keepdims=True) + 1e-8 # 1e-8 a 0-val való osztás ellen
+        std = X_dyn_train.std(axis=(0, 1), keepdims=True) + 1e-8
 
         X_dyn_train = (X_dyn_train - mean) / std
         X_dyn_test = (X_dyn_test - mean) / std
 
-        # Transzponálás: (Batch, Idő, Csatorna) -> (Batch, Csatorna, Idő) a Conv1d-hez
         X_dyn_train = np.transpose(X_dyn_train, (0, 2, 1))
         X_dyn_test = np.transpose(X_dyn_test, (0, 2, 1))
 
@@ -76,7 +78,7 @@ def main():
         test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
         # Modell inicializálása
-        model = BaselineModel(num_dynamic_features=4).to(device)
+        model = BaselineModel(num_dynamic_features=2).to(device)
         
         # Súlyozott veszteségfüggvény az esetleges imbalansz ellen
         pos_weight_val = sum(y_binary[train_mask] == 0) / sum(y_binary[train_mask] == 1)
