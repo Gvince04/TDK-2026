@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class BaselineModel(nn.Module):
-    def __init__(self, num_dynamic_features=10):
+    def __init__(self, num_dynamic_features=8):
         super(BaselineModel, self).__init__()
         
         self.dynamic_encoder = nn.Sequential(

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class GatedFusionModel(nn.Module):
-    def __init__(self, num_dynamic_features=10, num_static_levels=4):
+    def __init__(self, num_dynamic_features=8, num_static_levels=4):
         super(GatedFusionModel, self).__init__()
         
         self.dynamic_encoder = nn.Sequential(

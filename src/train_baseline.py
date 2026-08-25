@@ -27,25 +27,36 @@ class CLAREDataset(Dataset):
         return self.dynamic[idx], self.static[idx], self.labels[idx]
 
 def extract_features(X):
-    baseline = np.mean(X[:, :50, :], axis=1, keepdims=True)
-    X_centered = X - baseline
+    pupil_left_mean = np.mean(X[:, :, 0], axis=1)
+    pupil_left_std = np.std(X[:, :, 0], axis=1)
+    pupil_right_mean = np.mean(X[:, :, 1], axis=1)
+    pupil_right_std = np.std(X[:, :, 1], axis=1)
 
-    n_samples, n_time, n_channels = X_centered.shape
-    time_axis = np.arange(n_time)
-    time_mean = time_axis.mean()
-    time_centered = time_axis - time_mean
-    denom = np.sum(time_centered ** 2)
+    gaze_x = X[:, :, 2]
+    gaze_y = X[:, :, 3]
 
-    features = []
-    for c in range(n_channels):
-        channel_data = X_centered[:, :, c]
-        channel_mean = np.mean(channel_data, axis=1)
-        channel_std = np.std(channel_data, axis=1)
-        channel_p5 = np.percentile(channel_data, 5, axis=1)
-        channel_p95 = np.percentile(channel_data, 95, axis=1)
-        channel_slope = ((channel_data - channel_mean[:, None]) @ time_centered) / denom
-        features.extend([channel_mean, channel_std, channel_p5, channel_p95, channel_slope])
-    return np.stack(features, axis=1)
+    gaze_dispersion_x = np.std(gaze_x, axis=1)
+    gaze_dispersion_y = np.std(gaze_y, axis=1)
+
+    diff_x = np.diff(gaze_x, axis=1)
+    diff_y = np.diff(gaze_y, axis=1)
+    velocity = np.sqrt(diff_x ** 2 + diff_y ** 2)
+
+    gaze_velocity_mean = np.mean(velocity, axis=1)
+    gaze_velocity_std = np.std(velocity, axis=1)
+
+    features = np.stack([
+        pupil_left_mean,
+        pupil_left_std,
+        pupil_right_mean,
+        pupil_right_std,
+        gaze_dispersion_x,
+        gaze_dispersion_y,
+        gaze_velocity_mean,
+        gaze_velocity_std
+    ], axis=1)
+
+    return features
 
 def main():
     print("--- Adatok betöltése ---")
@@ -77,8 +88,8 @@ def main():
         train_mask = subjects != test_subject
         test_mask = subjects == test_subject
 
-        X_dyn_train_raw = X_dynamic[train_mask][:, :, :2].copy()
-        X_dyn_test_raw = X_dynamic[test_mask][:, :, :2].copy()
+        X_dyn_train_raw = X_dynamic[train_mask].copy()
+        X_dyn_test_raw = X_dynamic[test_mask].copy()
 
         train_features = extract_features(X_dyn_train_raw)
         test_features = extract_features(X_dyn_test_raw)
@@ -95,7 +106,7 @@ def main():
         train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
         test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-        model = BaselineModel(num_dynamic_features=10).to(device)
+        model = BaselineModel(num_dynamic_features=8).to(device)
         
         pos_weight_val = sum(y_binary[train_mask] == 0) / sum(y_binary[train_mask] == 1)
         pos_weight_tensor = torch.tensor([pos_weight_val], dtype=torch.float32).to(device)
