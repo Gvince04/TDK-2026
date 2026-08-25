@@ -26,6 +26,16 @@ class CLAREDataset(Dataset):
     def __getitem__(self, idx):
         return self.dynamic[idx], self.static[idx], self.labels[idx]
 
+def extract_features(X):
+    features = []
+    for c in range(X.shape[2]):
+        channel = X[:, :, c]
+        features.append(np.mean(channel, axis=1))
+        features.append(np.std(channel, axis=1))
+        features.append(np.max(channel, axis=1))
+        features.append(np.min(channel, axis=1))
+    return np.stack(features, axis=1)
+
 def main():
     print("--- Adatok betöltése ---")
     data_path = os.path.join(project_root, 'data', 'processed', 'processed_dataset_calibrated.npz')
@@ -52,24 +62,21 @@ def main():
 
     all_bal_acc, all_f1, all_auroc = [], [], []
 
-    # ---------------------------------------------------------
-    # LOSO KERESZTVVALIDÁCIÓS CIKLUS
-    # ---------------------------------------------------------
     for test_subject in unique_subjects:
         train_mask = subjects != test_subject
         test_mask = subjects == test_subject
 
-        X_dyn_train = X_dynamic[train_mask][:, :, :2].copy()
-        X_dyn_test = X_dynamic[test_mask][:, :, :2].copy()
+        X_dyn_train_raw = X_dynamic[train_mask][:, :, :2].copy()
+        X_dyn_test_raw = X_dynamic[test_mask][:, :, :2].copy()
 
-        mean = X_dyn_train.mean(axis=(0, 1), keepdims=True)
-        std = X_dyn_train.std(axis=(0, 1), keepdims=True) + 1e-8
+        train_features = extract_features(X_dyn_train_raw)
+        test_features = extract_features(X_dyn_test_raw)
 
-        X_dyn_train = (X_dyn_train - mean) / std
-        X_dyn_test = (X_dyn_test - mean) / std
+        mean = train_features.mean(axis=0, keepdims=True)
+        std = train_features.std(axis=0, keepdims=True) + 1e-8
 
-        X_dyn_train = np.transpose(X_dyn_train, (0, 2, 1))
-        X_dyn_test = np.transpose(X_dyn_test, (0, 2, 1))
+        X_dyn_train = (train_features - mean) / std
+        X_dyn_test = (test_features - mean) / std
 
         train_dataset = CLAREDataset(X_dyn_train, X_static[train_mask], y_binary[train_mask])
         test_dataset = CLAREDataset(X_dyn_test, X_static[test_mask], y_binary[test_mask])
@@ -77,16 +84,13 @@ def main():
         train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
         test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-        # Modell inicializálása
-        model = BaselineModel(num_dynamic_features=2).to(device)
+        model = BaselineModel(num_dynamic_features=8).to(device)
         
-        # Súlyozott veszteségfüggvény az esetleges imbalansz ellen
         pos_weight_val = sum(y_binary[train_mask] == 0) / sum(y_binary[train_mask] == 1)
         pos_weight_tensor = torch.tensor([pos_weight_val], dtype=torch.float32).to(device)
         criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight_tensor)
         optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=1e-4)
 
-        # --- TANÍTÁS ---
         epochs = 25
         model.train()
         for epoch in range(epochs):
@@ -99,7 +103,6 @@ def main():
                 loss.backward()
                 optimizer.step()
 
-        # --- TESZTELÉS (Zero-shot) ---
         model.eval()
         all_preds = []
         all_targets = []
@@ -117,10 +120,8 @@ def main():
         all_preds = np.array(all_preds)
         all_targets = np.array(all_targets)
         
-        # Döntési küszöb
         pred_labels = (all_preds >= 0.5).astype(int)
         
-        # Metrikák
         if len(np.unique(all_targets)) > 1:
             auroc = roc_auc_score(all_targets, all_preds)
             bal_acc = balanced_accuracy_score(all_targets, pred_labels)
