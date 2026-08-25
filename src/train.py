@@ -1,5 +1,8 @@
 import sys
 import os
+import argparse
+import json
+import shutil
 
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if project_root not in sys.path:
@@ -59,6 +62,11 @@ def extract_features(X):
     return features
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--fast', action='store_true')
+    args = parser.parse_args()
+    max_subjects = 3 if args.fast else None
+
     print("--- Adatok betöltése ---")
     data_path = os.path.join(project_root, 'data', 'processed', 'processed_dataset_calibrated.npz')
     data = np.load(data_path, allow_pickle=True)
@@ -82,9 +90,43 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Használt eszköz: {device}")
 
-    all_bal_acc, all_f1, all_auroc = [], [], []
+    results_dir = os.path.join(project_root, 'results')
+    os.makedirs(results_dir, exist_ok=True)
+    existing_runs = [d for d in os.listdir(results_dir)
+                     if os.path.isdir(os.path.join(results_dir, d)) and d.startswith('run_')]
+    run_numbers = []
+    for d in existing_runs:
+        try:
+            run_numbers.append(int(d.split('_')[1]))
+        except (IndexError, ValueError):
+            pass
+    next_num = max(run_numbers) + 1 if run_numbers else 1
+    run_dir = os.path.join(results_dir, f'run_{next_num:03d}')
+    os.makedirs(run_dir, exist_ok=True)
+    print(f"Eredmények mappája: {run_dir}")
 
-    for test_subject in unique_subjects:
+    config = {
+        'model': 'GatedFusionModel',
+        'fast': args.fast,
+        'max_subjects': max_subjects,
+        'batch_size': 32,
+        'epochs': 25,
+        'learning_rate': 0.0005,
+        'weight_decay': 1e-3,
+        'num_dynamic_features': 8,
+        'num_static_levels': 4
+    }
+
+    unique_subjects_loop = unique_subjects if max_subjects is None else unique_subjects[:max_subjects]
+    if args.fast:
+        print(f"Fast mode aktiv: csak {len(unique_subjects_loop)} alany feldolgozása")
+
+    all_bal_acc, all_f1, all_auroc = [], [], []
+    fold_metrics = []
+    best_score = -float('inf')
+    best_fold_model_path = None
+
+    for test_subject in unique_subjects_loop:
         train_mask = subjects != test_subject
         test_mask = subjects == test_subject
 
@@ -126,6 +168,9 @@ def main():
                 loss.backward()
                 optimizer.step()
 
+        fold_model_path = os.path.join(run_dir, f'model_fold_{test_subject}.pth')
+        torch.save(model.state_dict(), fold_model_path)
+
         model.eval()
         all_preds = []
         all_targets = []
@@ -154,6 +199,18 @@ def main():
             bal_acc = balanced_accuracy_score(all_targets, pred_labels)
             f1 = f1_score(all_targets, pred_labels, average='macro', zero_division=0)
 
+        score = auroc if not np.isnan(auroc) else bal_acc
+        if score > best_score:
+            best_score = score
+            best_fold_model_path = fold_model_path
+
+        fold_metrics.append({
+            'subject': str(test_subject),
+            'balanced_accuracy': float(bal_acc),
+            'macro_f1': float(f1),
+            'auroc': float(auroc) if not np.isnan(auroc) else None
+        })
+
         print(f"[{test_subject}] -> Bal. Acc: {bal_acc:.4f} | Macro-F1: {f1:.4f} | AUROC: {auroc if np.isnan(auroc) else f'{auroc:.4f}'}")
 
         all_bal_acc.append(bal_acc)
@@ -168,6 +225,35 @@ def main():
     print(f"Átlagos Macro-F1 Score:    {np.mean(all_f1):.4f} ± {np.std(all_f1):.4f}")
     print(f"Átlagos AUROC Score:       {np.mean(all_auroc):.4f} ± {np.std(all_auroc):.4f}")
     print("=======================================================")
+
+    agg_bal_acc_mean = float(np.mean(all_bal_acc))
+    agg_bal_acc_std = float(np.std(all_bal_acc))
+    agg_f1_mean = float(np.mean(all_f1))
+    agg_f1_std = float(np.std(all_f1))
+    agg_auroc_mean = float(np.mean(all_auroc)) if all_auroc else None
+    agg_auroc_std = float(np.std(all_auroc)) if all_auroc else None
+
+    final_metrics = {
+        'config': config,
+        'fold_metrics': fold_metrics,
+        'aggregates': {
+            'balanced_accuracy_mean': agg_bal_acc_mean,
+            'balanced_accuracy_std': agg_bal_acc_std,
+            'macro_f1_mean': agg_f1_mean,
+            'macro_f1_std': agg_f1_std,
+            'auroc_mean': agg_auroc_mean,
+            'auroc_std': agg_auroc_std
+        }
+    }
+
+    metrics_path = os.path.join(run_dir, 'metrics.json')
+    with open(metrics_path, 'w') as f:
+        json.dump(final_metrics, f, indent=4)
+
+    if best_fold_model_path is not None:
+        best_model_path = os.path.join(run_dir, 'best_model.pth')
+        shutil.copy2(best_fold_model_path, best_model_path)
+        print(f"Legjobb fold modell elmentve: {best_model_path}")
 
 if __name__ == '__main__':
     main()
