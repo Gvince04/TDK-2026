@@ -1,0 +1,41 @@
+{
+    "config": {
+        "model": "GatedFusionModel",
+        "fast": true,
+        "max_subjects": 3,
+        "batch_size": 32,
+        "epochs": 25,
+        "learning_rate": 0.0005,
+        "weight_decay": 0.001,
+        "num_dynamic_features": 8,
+        "num_static_levels": 4
+    },
+    "fold_metrics": [
+        {
+            "subject": "1026",
+            "balanced_accuracy": 0.5,
+            "macro_f1": 0.38108882521489973,
+            "auroc": 0.5110064317420056
+        },
+        {
+            "subject": "1106",
+            "balanced_accuracy": 0.5489655172413793,
+            "macro_f1": 0.4419713831478538,
+            "auroc": 0.423448275862069
+        },
+        {
+            "subject": "1175",
+            "balanced_accuracy": 0.3398268398268398,
+            "macro_f1": 0.24651162790697675,
+            "auroc": 0.2784992784992785
+        }
+    ],
+    "aggregates": {
+        "balanced_accuracy_mean": 0.46293078568940643,
+        "balanced_accuracy_std": 0.0893134614149485,
+        "macro_f1_mean": 0.3565239454232434,
+        "macro_f1_std": 0.08166477808329113,
+        "auroc_mean": 0.4043179953677844,
+        "auroc_std": 0.09587968085436296
+    }
+}

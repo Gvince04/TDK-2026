@@ -1,0 +1,41 @@
+{
+    "config": {
+        "model": "BaselineModel",
+        "fast": true,
+        "max_subjects": 3,
+        "batch_size": 32,
+        "epochs": 25,
+        "learning_rate": 0.0005,
+        "weight_decay": 0.001,
+        "num_dynamic_features": 8,
+        "num_static_levels": null
+    },
+    "fold_metrics": [
+        {
+            "subject": "1026",
+            "balanced_accuracy": 0.5,
+            "macro_f1": 0.38108882521489973,
+            "auroc": 0.48238065042123385
+        },
+        {
+            "subject": "1106",
+            "balanced_accuracy": 0.40413793103448276,
+            "macro_f1": 0.40413793103448276,
+            "auroc": 0.3489655172413793
+        },
+        {
+            "subject": "1175",
+            "balanced_accuracy": 0.4913419913419913,
+            "macro_f1": 0.3025440313111546,
+            "auroc": 0.4314574314574315
+        }
+    ],
+    "aggregates": {
+        "balanced_accuracy_mean": 0.4651599741254914,
+        "balanced_accuracy_std": 0.04329362990657495,
+        "macro_f1_mean": 0.36259026252017906,
+        "macro_f1_std": 0.04348929164423735,
+        "auroc_mean": 0.4209345330400149,
+        "auroc_std": 0.05497240509975305
+    }
+}
