@@ -27,13 +27,24 @@ class CLAREDataset(Dataset):
         return self.dynamic[idx], self.static[idx], self.labels[idx]
 
 def extract_features(X):
+    baseline = np.mean(X[:, :50, :], axis=1, keepdims=True)
+    X_centered = X - baseline
+
+    n_samples, n_time, n_channels = X_centered.shape
+    time_axis = np.arange(n_time)
+    time_mean = time_axis.mean()
+    time_centered = time_axis - time_mean
+    denom = np.sum(time_centered ** 2)
+
     features = []
-    for c in range(X.shape[2]):
-        channel = X[:, :, c]
-        features.append(np.mean(channel, axis=1))
-        features.append(np.std(channel, axis=1))
-        features.append(np.max(channel, axis=1))
-        features.append(np.min(channel, axis=1))
+    for c in range(n_channels):
+        channel_data = X_centered[:, :, c]
+        channel_mean = np.mean(channel_data, axis=1)
+        channel_std = np.std(channel_data, axis=1)
+        channel_p5 = np.percentile(channel_data, 5, axis=1)
+        channel_p95 = np.percentile(channel_data, 95, axis=1)
+        channel_slope = ((channel_data - channel_mean[:, None]) @ time_centered) / denom
+        features.extend([channel_mean, channel_std, channel_p5, channel_p95, channel_slope])
     return np.stack(features, axis=1)
 
 def main():
@@ -84,12 +95,12 @@ def main():
         train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
         test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-        model = BaselineModel(num_dynamic_features=8).to(device)
+        model = BaselineModel(num_dynamic_features=10).to(device)
         
         pos_weight_val = sum(y_binary[train_mask] == 0) / sum(y_binary[train_mask] == 1)
         pos_weight_tensor = torch.tensor([pos_weight_val], dtype=torch.float32).to(device)
         criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight_tensor)
-        optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=1e-4)
+        optimizer = optim.Adam(model.parameters(), lr=0.0005, weight_decay=1e-3)
 
         epochs = 25
         model.train()

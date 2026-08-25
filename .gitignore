@@ -15,3 +15,6 @@ processed_dataset.npz
 
 # Ignore
 ignore
+CONVENTIONS.md
+commit_minta.txt
+.aider*

@@ -2,18 +2,18 @@ import torch
 import torch.nn as nn
 
 class GatedFusionModel(nn.Module):
-    def __init__(self, num_dynamic_features=8, num_static_levels=4):
+    def __init__(self, num_dynamic_features=10, num_static_levels=4):
         super(GatedFusionModel, self).__init__()
         
         self.dynamic_encoder = nn.Sequential(
             nn.Linear(num_dynamic_features, 64),
             nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.Dropout(0.2),
+            nn.Dropout(0.4),
             nn.Linear(64, 64),
             nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.Dropout(0.2)
+            nn.Dropout(0.4)
         )
         
         self.static_embedding = nn.Embedding(num_embeddings=num_static_levels, embedding_dim=16)
@@ -26,7 +26,7 @@ class GatedFusionModel(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(64 + 16, 32),
             nn.ReLU(),
-            nn.Dropout(0.3),
+            nn.Dropout(0.5),
             nn.Linear(32, 1)
         )
 
