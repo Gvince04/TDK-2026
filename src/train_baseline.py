@@ -14,6 +14,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from sklearn.metrics import balanced_accuracy_score, f1_score, roc_auc_score
+from scipy.signal import welch
 
 from models.baseline_model import BaselineModel
 
@@ -30,33 +31,48 @@ class CLAREDataset(Dataset):
         return self.dynamic[idx], self.static[idx], self.labels[idx]
 
 def extract_features(X):
-    pupil_left_mean = np.mean(X[:, :, 0], axis=1)
-    pupil_left_std = np.std(X[:, :, 0], axis=1)
-    pupil_right_mean = np.mean(X[:, :, 1], axis=1)
-    pupil_right_std = np.std(X[:, :, 1], axis=1)
-
+    pupil_left = X[:, :, 0]
+    pupil_right = X[:, :, 1]
     gaze_x = X[:, :, 2]
     gaze_y = X[:, :, 3]
 
+    pupil_left_mean = np.mean(pupil_left, axis=1)
+    pupil_left_std = np.std(pupil_left, axis=1)
+    pupil_left_range = np.percentile(pupil_left, 95, axis=1) - np.percentile(pupil_left, 5, axis=1)
+    pupil_left_vel = np.mean(np.abs(np.gradient(pupil_left, axis=1)), axis=1)
+
+    freqs, psd_left = welch(pupil_left, fs=50, nperseg=250, axis=1)
+    low_freq_mask = freqs <= 0.6
+    pupil_left_low_psd = np.sum(psd_left[:, low_freq_mask], axis=1)
+
+    pupil_right_mean = np.mean(pupil_right, axis=1)
+    pupil_right_std = np.std(pupil_right, axis=1)
+    pupil_right_range = np.percentile(pupil_right, 95, axis=1) - np.percentile(pupil_right, 5, axis=1)
+    pupil_right_vel = np.mean(np.abs(np.gradient(pupil_right, axis=1)), axis=1)
+
+    freqs, psd_right = welch(pupil_right, fs=50, nperseg=250, axis=1)
+    pupil_right_low_psd = np.sum(psd_right[:, low_freq_mask], axis=1)
+
     gaze_dispersion_x = np.std(gaze_x, axis=1)
     gaze_dispersion_y = np.std(gaze_y, axis=1)
-
-    diff_x = np.diff(gaze_x, axis=1)
-    diff_y = np.diff(gaze_y, axis=1)
-    velocity = np.sqrt(diff_x ** 2 + diff_y ** 2)
-
-    gaze_velocity_mean = np.mean(velocity, axis=1)
-    gaze_velocity_std = np.std(velocity, axis=1)
+    grad_x = np.gradient(gaze_x, axis=1)
+    grad_y = np.gradient(gaze_y, axis=1)
+    gaze_vel = np.mean(np.sqrt(grad_x ** 2 + grad_y ** 2), axis=1)
 
     features = np.stack([
         pupil_left_mean,
         pupil_left_std,
+        pupil_left_range,
+        pupil_left_vel,
+        pupil_left_low_psd,
         pupil_right_mean,
         pupil_right_std,
+        pupil_right_range,
+        pupil_right_vel,
+        pupil_right_low_psd,
         gaze_dispersion_x,
         gaze_dispersion_y,
-        gaze_velocity_mean,
-        gaze_velocity_std
+        gaze_vel
     ], axis=1)
 
     return features
@@ -142,13 +158,15 @@ def main():
         X_dyn_train = (train_features - mean) / std
         X_dyn_test = (test_features - mean) / std
 
+        num_features = X_dyn_train.shape[1]
+
         train_dataset = CLAREDataset(X_dyn_train, X_static[train_mask], y_binary[train_mask])
         test_dataset = CLAREDataset(X_dyn_test, X_static[test_mask], y_binary[test_mask])
 
         train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
         test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-        model = BaselineModel(num_dynamic_features=8).to(device)
+        model = BaselineModel(num_dynamic_features=num_features).to(device)
         
         pos_weight_val = sum(y_binary[train_mask] == 0) / sum(y_binary[train_mask] == 1)
         pos_weight_tensor = torch.tensor([pos_weight_val], dtype=torch.float32).to(device)
