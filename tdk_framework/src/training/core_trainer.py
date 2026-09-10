@@ -8,7 +8,11 @@ from torch.utils.data import DataLoader
 from sklearn.metrics import balanced_accuracy_score, f1_score, roc_auc_score
 
 
-def _prepare_batch(batch: Tuple[torch.Tensor, ...], device: torch.device):
+def _prepare_batch(
+    batch: Tuple[torch.Tensor, ...],
+    device: torch.device,
+    replicate_single_sample: bool = False,
+):
     if len(batch) == 4:
         x_dyn, x_stat, y, _ = batch
     elif len(batch) == 3:
@@ -23,6 +27,12 @@ def _prepare_batch(batch: Tuple[torch.Tensor, ...], device: torch.device):
     if x_stat is not None:
         x_stat = x_stat.to(device, non_blocking=True)
     y = y.to(device, non_blocking=True)
+
+    if replicate_single_sample and x_dyn.size(0) == 1:
+        x_dyn = torch.cat([x_dyn, x_dyn], dim=0)
+        if x_stat is not None:
+            x_stat = torch.cat([x_stat, x_stat], dim=0)
+        y = torch.cat([y, y], dim=0)
 
     return x_dyn, x_stat, y
 
@@ -91,7 +101,11 @@ def train_model(
 
         for batch in train_loader:
             optimizer.zero_grad()
-            x_dyn, x_stat, y = _prepare_batch(batch, device)
+            x_dyn, x_stat, y = _prepare_batch(
+                batch,
+                device,
+                replicate_single_sample=True,
+            )
             outputs = _forward_pass(model, x_dyn, x_stat)
             loss = criterion(outputs, y)
             loss.backward()
