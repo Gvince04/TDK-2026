@@ -20,6 +20,27 @@ from src.experiments.few_shot import run_few_shot_experiment
 from models.baseline_model import BaselineModel
 
 
+def find_raw_data_path(tdk_framework_dir: Path, project_root: Path) -> Path:
+    raw_candidate = tdk_framework_dir / "data" / "raw" / "processed_dataset_calibrated.npz"
+    if raw_candidate.exists() and raw_candidate.is_file():
+        return raw_candidate
+
+    default_candidate = project_root / "data" / "processed" / "processed_dataset_calibrated.npz"
+    if default_candidate.exists() and default_candidate.is_file():
+        return default_candidate
+
+    raw_dir = tdk_framework_dir / "data" / "raw"
+    if raw_dir.exists() and raw_dir.is_dir():
+        npz_files = [p for p in raw_dir.glob("*.npz") if p.is_file()]
+        if npz_files:
+            return npz_files[0]
+
+    raise FileNotFoundError(
+        "No raw .npz dataset found. Tried "
+        f"{raw_candidate}, {default_candidate}, and any .npz in {raw_dir}"
+    )
+
+
 def train_base_model(dataset, model_class, trainer_kwargs):
     device = trainer_kwargs["device"]
     model = model_class().to(device)
@@ -66,7 +87,9 @@ def main():
         "verbose": False,
     }
 
-    dataset_path = process_dataset()
+    raw_data_path = find_raw_data_path(tdk_framework_dir, project_root)
+    output_dir = tdk_framework_dir / "data" / "processed"
+    dataset_path = process_dataset(raw_data_path, output_dir)
     dataset = torch.load(dataset_path, weights_only=False)
 
     zero_shot_result = run_zero_shot_experiment(
