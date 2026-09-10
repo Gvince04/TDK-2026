@@ -12,48 +12,48 @@ class CognitiveLoadDataset(Dataset):
         labels: Union[np.ndarray, torch.Tensor],
         subject_ids: Sequence[Union[int, str]],
     ) -> None:
-        self.dynamic = torch.as_tensor(dynamic_data, dtype=torch.float32)
+        self.X_dyn = torch.as_tensor(dynamic_data, dtype=torch.float32)
 
         static_tensor = torch.as_tensor(static_data, dtype=torch.long)
         if static_tensor.ndim == 1:
             static_tensor = static_tensor.unsqueeze(1)
-        self.static = static_tensor
+        self.X_stat = static_tensor
 
-        self.labels = torch.as_tensor(labels, dtype=torch.float32)
-        self.subject_ids = list(subject_ids)
+        self.y = torch.as_tensor(labels, dtype=torch.float32)
+        self.subject_id = list(subject_ids)
 
         if not (
-            self.dynamic.shape[0] == self.static.shape[0]
-            and self.static.shape[0] == self.labels.shape[0]
-            and self.labels.shape[0] == len(self.subject_ids)
+            self.X_dyn.shape[0] == self.X_stat.shape[0]
+            and self.X_stat.shape[0] == self.y.shape[0]
+            and self.y.shape[0] == len(self.subject_id)
         ):
             raise ValueError("All inputs must have the same number of samples")
 
     def __len__(self) -> int:
-        return len(self.labels)
+        return len(self.y)
 
     def __getitem__(self, idx: int):
         return (
-            self.dynamic[idx],
-            self.static[idx],
-            self.labels[idx],
-            self.subject_ids[idx],
+            self.X_dyn[idx],
+            self.X_stat[idx],
+            self.y[idx],
+            self.subject_id[idx],
         )
 
     @property
     def num_dynamic_features(self) -> int:
-        return self.dynamic.shape[1] if self.dynamic.ndim > 1 else 1
+        return self.X_dyn.shape[1] if self.X_dyn.ndim > 1 else 1
 
     @property
     def num_static_features(self) -> int:
-        return self.static.shape[1] if self.static.ndim > 1 else 1
+        return self.X_stat.shape[1] if self.X_stat.ndim > 1 else 1
 
     def get_indices_by_subjects(
         self, subject_ids: Sequence[Union[int, str]]
     ) -> List[int]:
         subject_set = set(subject_ids)
         return [
-            idx for idx, subject_id in enumerate(self.subject_ids)
+            idx for idx, subject_id in enumerate(self.subject_id)
             if subject_id in subject_set
         ]
 

@@ -5,7 +5,6 @@ import numpy as np
 import torch
 
 from .base_dataset import CognitiveLoadDataset
-from .feature_extraction import extract_features
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -24,6 +23,17 @@ def binarize_labels(subjects: np.ndarray, y: np.ndarray) -> np.ndarray:
     return y_binary
 
 
+def extract_basic_features(X: np.ndarray) -> np.ndarray:
+    if X.ndim != 3:
+        raise ValueError(f"X_dynamic must be a 3D array with shape (N, T, C), got {X.shape}")
+
+    means = np.mean(X, axis=1)
+    stds = np.std(X, axis=1)
+
+    features = np.concatenate([means, stds], axis=1)
+    return features
+
+
 def process_dataset(raw_data_path: Path, output_dir: Path) -> Path:
     if not raw_data_path.exists():
         raise FileNotFoundError(f"Raw data file not found: {raw_data_path}")
@@ -40,8 +50,8 @@ def process_dataset(raw_data_path: Path, output_dir: Path) -> Path:
     y_raw = data["y"]
     subjects = data["subjects"]
 
-    print("Extracting engineered features...")
-    features = extract_features(X_dynamic)
+    print("Extracting basic features (mean and std per channel)...")
+    features = extract_basic_features(X_dynamic)
 
     print("Binarizing labels using subject-level median split...")
     y_binary = binarize_labels(subjects, y_raw)
