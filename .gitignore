@@ -12,6 +12,8 @@ wheels/
 # Dataset
 data/*
 processed_dataset.npz
+download/*
+tdk_framework/data/*
 
 # Ignore
 ignore

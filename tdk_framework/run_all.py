@@ -1,3 +1,4 @@
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -12,7 +13,8 @@ for p in (str(project_root), str(tdk_framework_dir)):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from src.data.preprocess_tdk import process_dataset
+from src.data.preprocess_tdk import process_dataset as process_tdk_dataset
+from src.data.preprocess_wesad import process_dataset as process_wesad_dataset
 from src.training.core_trainer import train_model
 from src.experiments.zero_shot import run_zero_shot_experiment
 from src.experiments.intra_subject import run_intra_subject_experiment
@@ -20,7 +22,7 @@ from src.experiments.few_shot import run_few_shot_experiment
 from models.baseline_model import BaselineModel
 
 
-def find_raw_data_path(tdk_framework_dir: Path, project_root: Path) -> Path:
+def find_tdk_raw_data_path(tdk_framework_dir: Path, project_root: Path) -> Path:
     raw_candidate = tdk_framework_dir / "data" / "raw" / "processed_dataset_calibrated.npz"
     if raw_candidate.exists() and raw_candidate.is_file():
         return raw_candidate
@@ -39,6 +41,29 @@ def find_raw_data_path(tdk_framework_dir: Path, project_root: Path) -> Path:
         "No raw .npz dataset found. Tried "
         f"{raw_candidate}, {default_candidate}, and any .npz in {raw_dir}"
     )
+
+
+def find_wesad_raw_data_path(tdk_framework_dir: Path, project_root: Path) -> Path:
+    raw_candidate = tdk_framework_dir / "data" / "raw" / "wesad"
+    if raw_candidate.exists() and raw_candidate.is_dir():
+        return raw_candidate
+
+    default_candidate = project_root / "data" / "raw" / "wesad"
+    if default_candidate.exists() and default_candidate.is_dir():
+        return default_candidate
+
+    raise FileNotFoundError(
+        "No WESAD raw data directory found. Tried "
+        f"{raw_candidate} and {default_candidate}"
+    )
+
+
+def resolve_dataset(dataset_name: str, tdk_framework_dir: Path, project_root: Path):
+    if dataset_name == "tdk":
+        return find_tdk_raw_data_path(tdk_framework_dir, project_root), process_tdk_dataset
+    if dataset_name == "wesad":
+        return find_wesad_raw_data_path(tdk_framework_dir, project_root), process_wesad_dataset
+    raise ValueError(f"Unknown dataset: {dataset_name}")
 
 
 def train_base_model(dataset, model_class, trainer_kwargs):
@@ -73,6 +98,17 @@ def train_base_model(dataset, model_class, trainer_kwargs):
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Run zero-shot, intra-subject and few-shot experiments."
+    )
+    parser.add_argument(
+        "--dataset",
+        choices=["tdk", "wesad"],
+        default="tdk",
+        help="Which dataset to preprocess and evaluate.",
+    )
+    args = parser.parse_args()
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     trainer_kwargs = {
@@ -87,7 +123,9 @@ def main():
         "verbose": False,
     }
 
-    raw_data_path = find_raw_data_path(tdk_framework_dir, project_root)
+    raw_data_path, process_dataset = resolve_dataset(
+        args.dataset, tdk_framework_dir, project_root
+    )
     output_dir = tdk_framework_dir / "data" / "processed"
     dataset_path = process_dataset(raw_data_path, output_dir)
     dataset = torch.load(dataset_path, weights_only=False)
@@ -124,7 +162,7 @@ def main():
 
     results_dir = tdk_framework_dir / "results"
     results_dir.mkdir(parents=True, exist_ok=True)
-    results_file = results_dir / "experiment_results.json"
+    results_file = results_dir / f"experiment_results_{args.dataset}.json"
 
     with open(results_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4)
