@@ -19,8 +19,8 @@ from src.training.core_trainer import train_model
 from src.experiments.zero_shot import run_zero_shot_experiment
 from src.experiments.intra_subject import run_intra_subject_experiment
 from src.experiments.few_shot import run_few_shot_experiment
-from models.baseline_model import BaselineModel
-from models.gated_fusion import GatedFusionModel
+from tdk_framework.src.models.baseline_model import BaselineModel
+from tdk_framework.src.models.gated_fusion import GatedFusionModel
 
 
 MODEL_REGISTRY = {
