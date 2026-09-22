@@ -1,4 +1,5 @@
 import copy
+import warnings
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -46,16 +47,25 @@ def _forward_pass(model: nn.Module, x_dyn: torch.Tensor, x_stat: Optional[torch.
 def _compute_binary_metrics(probs: np.ndarray, targets: np.ndarray) -> Dict[str, Optional[float]]:
     preds = (probs >= 0.5).astype(int)
 
-    balanced_acc = balanced_accuracy_score(targets, preds)
-    f1 = f1_score(targets, preds, average="macro", labels=[0, 1], zero_division=0)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
 
-    if len(np.unique(targets)) < 2:
-        return {"auroc": np.nan, "balanced_acc": balanced_acc, "f1": f1}
+        balanced_acc = balanced_accuracy_score(targets, preds)
+        f1 = f1_score(
+            targets,
+            preds,
+            average="macro",
+            labels=[0, 1],
+            zero_division=0,
+        )
 
-    try:
-        auroc = roc_auc_score(targets, probs)
-    except ValueError:
-        auroc = np.nan
+        if len(np.unique(targets)) < 2:
+            return {"auroc": np.nan, "balanced_acc": balanced_acc, "f1": f1}
+
+        try:
+            auroc = roc_auc_score(targets, probs)
+        except ValueError:
+            auroc = np.nan
 
     return {"auroc": auroc, "balanced_acc": balanced_acc, "f1": f1}
 
