@@ -29,14 +29,18 @@ MODEL_REGISTRY = {
 }
 
 
+def build_model_kwargs(model_name: str, dataset) -> dict:
+    if model_name == "gated_fusion":
+        return {
+            "num_dynamic_features": dataset.num_dynamic_features,
+            "num_static_features": dataset.num_static_features,
+        }
+    return {"num_dynamic_features": dataset.num_dynamic_features}
+
+
 def build_model(model_name: str, dataset) -> torch.nn.Module:
     model_class = MODEL_REGISTRY[model_name]
-    if model_name == "gated_fusion":
-        return model_class(
-            num_dynamic_features=dataset.num_dynamic_features,
-            num_static_features=dataset.num_static_features,
-        )
-    return model_class(num_dynamic_features=dataset.num_dynamic_features)
+    return model_class(**build_model_kwargs(model_name, dataset))
 
 
 def find_tdk_raw_data_path(tdk_framework_dir: Path, project_root: Path) -> Path:
@@ -154,11 +158,13 @@ def main():
     dataset = torch.load(dataset_path, weights_only=False)
 
     model_class = MODEL_REGISTRY[args.model]
+    model_kwargs = build_model_kwargs(args.model, dataset)
 
     zero_shot_result = run_zero_shot_experiment(
         dataset=dataset,
         model_class=model_class,
         trainer_kwargs=trainer_kwargs,
+        model_kwargs=model_kwargs,
     )
 
     base_model = train_base_model(
@@ -171,6 +177,7 @@ def main():
         dataset=dataset,
         model_class=model_class,
         trainer_kwargs=trainer_kwargs,
+        model_kwargs=model_kwargs,
     )
 
     few_shot_result = run_few_shot_experiment(

@@ -20,7 +20,10 @@ def run_zero_shot_experiment(
     dataset: CognitiveLoadDataset,
     model_class: Type[torch.nn.Module],
     trainer_kwargs: Dict[str, Any],
+    model_kwargs: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
+    if model_kwargs is None:
+        model_kwargs = {}
     subjects = sorted(set(dataset.subject_id))
     fold_results: List[Dict[str, Any]] = []
     device = trainer_kwargs.get("device", torch.device("cpu"))
@@ -36,7 +39,7 @@ def run_zero_shot_experiment(
         train_loader = DataLoader(train_subset, batch_size=batch_size, shuffle=True)
         val_loader = DataLoader(val_subset, batch_size=batch_size, shuffle=False)
 
-        model = model_class().to(device)
+        model = model_class(**model_kwargs).to(device)
         optimizer_cls = trainer_kwargs.get("optimizer_cls", torch.optim.Adam)
         optimizer_kwargs = trainer_kwargs.get("optimizer_kwargs", {"lr": 0.001})
         optimizer = optimizer_cls(model.parameters(), **optimizer_kwargs)
