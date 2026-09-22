@@ -46,19 +46,16 @@ def _forward_pass(model: nn.Module, x_dyn: torch.Tensor, x_stat: Optional[torch.
 def _compute_binary_metrics(probs: np.ndarray, targets: np.ndarray) -> Dict[str, Optional[float]]:
     preds = (probs >= 0.5).astype(int)
 
+    balanced_acc = balanced_accuracy_score(targets, preds)
+    f1 = f1_score(targets, preds, average="macro", labels=[0, 1], zero_division=0)
+
     if len(np.unique(targets)) < 2:
-        auroc = None
-        balanced_acc = balanced_accuracy_score(targets, preds)
-        f1 = f1_score(targets, preds, average="macro", zero_division=0)
-        return {"auroc": auroc, "balanced_acc": balanced_acc, "f1": f1}
+        return {"auroc": np.nan, "balanced_acc": balanced_acc, "f1": f1}
 
     try:
         auroc = roc_auc_score(targets, probs)
     except ValueError:
-        auroc = None
-
-    balanced_acc = balanced_accuracy_score(targets, preds)
-    f1 = f1_score(targets, preds, average="macro", zero_division=0)
+        auroc = np.nan
 
     return {"auroc": auroc, "balanced_acc": balanced_acc, "f1": f1}
 
