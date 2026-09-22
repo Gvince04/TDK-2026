@@ -27,6 +27,7 @@ METRICS = {
     "f1": "Macro F1",
     "auroc": "AUROC",
 }
+MODEL_ORDER = ["baseline", "gated_fusion"]
 
 
 def _parse_result_filename(path: Path):
@@ -35,13 +36,15 @@ def _parse_result_filename(path: Path):
     if not stem.startswith(prefix):
         return None
 
-    parts = stem[len(prefix):].split("_")
-    if len(parts) < 2:
-        return None
+    remainder = stem[len(prefix):]
+    for model in MODEL_ORDER:
+        suffix = f"_{model}"
+        if remainder.endswith(suffix):
+            dataset = remainder[: -len(suffix)]
+            if dataset:
+                return dataset, model
 
-    model = parts[-1]
-    dataset = "_".join(parts[:-1])
-    return dataset, model
+    return None
 
 
 def load_results(results_dir: Path) -> pd.DataFrame:
@@ -102,7 +105,7 @@ def plot_metric_comparison(
         y="mean",
         hue="model",
         order=[PARADIGM_LABELS[p] for p in PARADIGMS],
-        hue_order=["baseline", "gated_fusion"],
+        hue_order=MODEL_ORDER,
         errorbar=None,
         ax=ax,
     )
