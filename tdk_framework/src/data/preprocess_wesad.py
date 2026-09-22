@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .base_dataset import CognitiveLoadDataset
+from tdk_framework.src.data.base_dataset import CognitiveLoadDataset
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
