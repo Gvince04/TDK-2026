@@ -23,3 +23,10 @@
 - run_all.py --model kapcsolo: baseline es gated_fusion
 - Modell peldanyositas a dataset dimenzioival
 - Eredmenyfajl neve dataset es modell szerint
+
+# Vizualizacio
+
+- Uj modul: tdk_framework/src/visualization/plot_results.py
+- Eredmeny JSON-ok beolvasasa, dataset es modell szerinti bontas
+- Csoportositott oszlopdiagramok paradigmankent, metrikankent
+- 300 DPI PNG kimenet a tdk_framework/plots mappaba
