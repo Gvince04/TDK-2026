@@ -20,6 +20,23 @@ from src.experiments.zero_shot import run_zero_shot_experiment
 from src.experiments.intra_subject import run_intra_subject_experiment
 from src.experiments.few_shot import run_few_shot_experiment
 from models.baseline_model import BaselineModel
+from models.gated_fusion import GatedFusionModel
+
+
+MODEL_REGISTRY = {
+    "baseline": BaselineModel,
+    "gated_fusion": GatedFusionModel,
+}
+
+
+def build_model(model_name: str, dataset) -> torch.nn.Module:
+    model_class = MODEL_REGISTRY[model_name]
+    if model_name == "gated_fusion":
+        return model_class(
+            num_dynamic_features=dataset.num_dynamic_features,
+            num_static_features=dataset.num_static_features,
+        )
+    return model_class(num_dynamic_features=dataset.num_dynamic_features)
 
 
 def find_tdk_raw_data_path(tdk_framework_dir: Path, project_root: Path) -> Path:
@@ -66,9 +83,9 @@ def resolve_dataset(dataset_name: str, tdk_framework_dir: Path, project_root: Pa
     raise ValueError(f"Unknown dataset: {dataset_name}")
 
 
-def train_base_model(dataset, model_class, trainer_kwargs):
+def train_base_model(dataset, model, trainer_kwargs):
     device = trainer_kwargs["device"]
-    model = model_class().to(device)
+    model = model.to(device)
 
     full_loader = DataLoader(
         dataset,
@@ -107,6 +124,12 @@ def main():
         default="tdk",
         help="Which dataset to preprocess and evaluate.",
     )
+    parser.add_argument(
+        "--model",
+        choices=["baseline", "gated_fusion"],
+        default="baseline",
+        help="Which model architecture to evaluate.",
+    )
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -130,21 +153,23 @@ def main():
     dataset_path = process_dataset(raw_data_path, output_dir)
     dataset = torch.load(dataset_path, weights_only=False)
 
+    model_class = MODEL_REGISTRY[args.model]
+
     zero_shot_result = run_zero_shot_experiment(
         dataset=dataset,
-        model_class=BaselineModel,
+        model_class=model_class,
         trainer_kwargs=trainer_kwargs,
     )
 
     base_model = train_base_model(
         dataset=dataset,
-        model_class=BaselineModel,
+        model=build_model(args.model, dataset),
         trainer_kwargs=trainer_kwargs,
     )
 
     intra_subject_result = run_intra_subject_experiment(
         dataset=dataset,
-        model_class=BaselineModel,
+        model_class=model_class,
         trainer_kwargs=trainer_kwargs,
     )
 
@@ -162,7 +187,7 @@ def main():
 
     results_dir = tdk_framework_dir / "results"
     results_dir.mkdir(parents=True, exist_ok=True)
-    results_file = results_dir / f"experiment_results_{args.dataset}.json"
+    results_file = results_dir / f"experiment_results_{args.dataset}_{args.model}.json"
 
     with open(results_file, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4)

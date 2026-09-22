@@ -15,3 +15,11 @@
 - Egyosztalyos foldok kezelese: labels=[0, 1] a metrikakban, AUROC helyett nan
 - sklearn figyelmeztetesek elnyomva a metrikaszamitasban
 - WESAD pipeline lefutott: 859 minta, 8 dinamikus, 5 statikus feature
+
+# Gated Fusion es modellvalaszto
+
+- GatedFusionModel: nn.Embedding helyett Linear projection a folytonos statikus feature-okhoz
+- num_static_features parameter, tetszoleges dimenzio
+- run_all.py --model kapcsolo: baseline es gated_fusion
+- Modell peldanyositas a dataset dimenzioival
+- Eredmenyfajl neve dataset es modell szerint
