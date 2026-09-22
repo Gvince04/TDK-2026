@@ -22,7 +22,7 @@ class GatedFusionModel(nn.Module):
         )
         
         self.gate_generator = nn.Sequential(
-            nn.Linear(16, 64),
+            nn.Linear(num_static_features, 64),
             nn.Sigmoid()
         )
         
@@ -34,10 +34,11 @@ class GatedFusionModel(nn.Module):
         )
 
     def forward(self, dynamic_x, static_x):
+        static_x = static_x.float()
         dyn_features = self.dynamic_encoder(dynamic_x)
-        stat_features = self.static_encoder(static_x.float())
+        stat_features = self.static_encoder(static_x)
         
-        gate = self.gate_generator(stat_features)
+        gate = self.gate_generator(static_x)
         
         gated_dyn = (dyn_features * gate) + dyn_features
         
