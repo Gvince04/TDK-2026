@@ -1,0 +1,401 @@
+{
+    "zero_shot": {
+        "paradigm": "zero_shot",
+        "folds": [
+            {
+                "test_subject": "1026",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.38108882521489973,
+                "auroc": 0.5165775885496874
+            },
+            {
+                "test_subject": "1106",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.42857142857142855,
+                "auroc": 0.48211019661636945
+            },
+            {
+                "test_subject": "1175",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.35036496350364965,
+                "auroc": 0.5583079268292683
+            },
+            {
+                "test_subject": "1194",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3898305084745763,
+                "auroc": 0.5213210702341137
+            },
+            {
+                "test_subject": "1337",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.38108882521489973,
+                "auroc": 0.488495334722348
+            },
+            {
+                "test_subject": "1390",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.36283185840707965,
+                "auroc": 0.6335343998601276
+            },
+            {
+                "test_subject": "1419",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3582089552238806,
+                "auroc": 0.5215789473684211
+            },
+            {
+                "test_subject": "1544",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3333333333333333,
+                "auroc": 0.5014479500076208
+            },
+            {
+                "test_subject": "1624",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3590504451038576,
+                "auroc": 0.5764680295780774
+            },
+            {
+                "test_subject": "1629",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3890784982935154,
+                "auroc": 0.3484480431848853
+            },
+            {
+                "test_subject": "1674",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3951612903225806,
+                "auroc": 0.49852825745682894
+            },
+            {
+                "test_subject": "1688",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.40445859872611467,
+                "auroc": 0.593044619422572
+            },
+            {
+                "test_subject": "1717",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.40331491712707185,
+                "auroc": 0.39545009784735813
+            },
+            {
+                "test_subject": "1818",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.35714285714285715,
+                "auroc": 0.5103732638888889
+            },
+            {
+                "test_subject": "1892",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.4065934065934066,
+                "auroc": 0.49746621621621623
+            },
+            {
+                "test_subject": "1929",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.35135135135135137,
+                "auroc": 0.7015022015022016
+            },
+            {
+                "test_subject": "1933",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.35714285714285715,
+                "auroc": 0.6262586805555556
+            },
+            {
+                "test_subject": "1936",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.352,
+                "auroc": 0.5211916461916462
+            },
+            {
+                "test_subject": "1953",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.35522388059701493,
+                "auroc": 0.5831239712379798
+            },
+            {
+                "test_subject": "1981",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.43896103896103894,
+                "auroc": 0.3610096940702506
+            }
+        ],
+        "aggregates": {
+            "bal_acc_mean": 0.5,
+            "bal_acc_std": 0.0,
+            "f1_mean": 0.3777398919652707,
+            "f1_std": 0.02785832765760541,
+            "auroc_mean": 0.5218119067670208,
+            "auroc_std": 0.08517820304005842
+        }
+    },
+    "intra_subject": {
+        "paradigm": "intra_subject",
+        "folds": [
+            {
+                "subject": "1026",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3972602739726027,
+                "auroc": 0.5494252873563219
+            },
+            {
+                "subject": "1106",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.4430379746835443,
+                "auroc": 0.5682539682539682
+            },
+            {
+                "subject": "1175",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.14285714285714285,
+                "auroc": 0.5
+            },
+            {
+                "subject": "1194",
+                "balanced_acc": 0.4142857142857143,
+                "macro_f1": 0.3972602739726027,
+                "auroc": 0.5174603174603175
+            },
+            {
+                "subject": "1337",
+                "balanced_acc": 0.5131578947368421,
+                "macro_f1": 0.14809000523286237,
+                "auroc": 0.5921052631578947
+            },
+            {
+                "subject": "1390",
+                "balanced_acc": 0.515527950310559,
+                "macro_f1": 0.44367816091954027,
+                "auroc": 0.5631469979296067
+            },
+            {
+                "subject": "1419",
+                "balanced_acc": 0.4311111111111111,
+                "macro_f1": 0.419941348973607,
+                "auroc": 0.37111111111111106
+            },
+            {
+                "subject": "1544",
+                "balanced_acc": 0.5227272727272727,
+                "macro_f1": 0.2992922143579373,
+                "auroc": 0.7355371900826447
+            },
+            {
+                "subject": "1624",
+                "balanced_acc": 0.7133995037220844,
+                "macro_f1": 0.6502384737678856,
+                "auroc": 0.7543424317617867
+            },
+            {
+                "subject": "1629",
+                "balanced_acc": 0.36875,
+                "macro_f1": 0.35714285714285715,
+                "auroc": 0.346875
+            },
+            {
+                "subject": "1674",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.4,
+                "auroc": 0.485
+            },
+            {
+                "subject": "1688",
+                "balanced_acc": 0.4861111111111111,
+                "macro_f1": 0.4794520547945205,
+                "auroc": 0.08333333333333333
+            },
+            {
+                "subject": "1717",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.36231884057971014,
+                "auroc": 0.7431578947368421
+            },
+            {
+                "subject": "1818",
+                "balanced_acc": 0.5454545454545454,
+                "macro_f1": 0.48290598290598286,
+                "auroc": 0.5123966942148761
+            },
+            {
+                "subject": "1892",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.41333333333333333,
+                "auroc": 0.6129032258064516
+            },
+            {
+                "subject": "1929",
+                "balanced_acc": 0.542483660130719,
+                "macro_f1": 0.5368421052631579,
+                "auroc": 0.5533769063180828
+            },
+            {
+                "subject": "1933",
+                "balanced_acc": 0.629399585921325,
+                "macro_f1": 0.6239316239316239,
+                "auroc": 0.6894409937888198
+            },
+            {
+                "subject": "1936",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.26666666666666666,
+                "auroc": 0.6190476190476191
+            },
+            {
+                "subject": "1953",
+                "balanced_acc": 0.33035714285714285,
+                "macro_f1": 0.32767402376910015,
+                "auroc": 0.3236607142857143
+            },
+            {
+                "subject": "1981",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.46987951807228917,
+                "auroc": 0.6717948717948719
+            }
+        ],
+        "aggregates": {
+            "bal_acc_mean": 0.5006382746184213,
+            "bal_acc_std": 0.07917322371819974,
+            "f1_mean": 0.4030901437598483,
+            "f1_std": 0.12643332314104652,
+            "auroc_mean": 0.539618491022013,
+            "auroc_std": 0.15938839900813992
+        }
+    },
+    "few_shot": {
+        "paradigm": "few_shot",
+        "folds": [
+            {
+                "test_subject": "1026",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3944099378881988,
+                "auroc": 0.5149953682260306
+            },
+            {
+                "test_subject": "1106",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.4331395348837209,
+                "auroc": 0.465786402100963
+            },
+            {
+                "test_subject": "1175",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.36363636363636365,
+                "auroc": 0.6973062381852552
+            },
+            {
+                "test_subject": "1194",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.401840490797546,
+                "auroc": 0.5237356870229007
+            },
+            {
+                "test_subject": "1337",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.4054878048780488,
+                "auroc": 0.42008246422507883
+            },
+            {
+                "test_subject": "1390",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.375,
+                "auroc": 0.6260135875520491
+            },
+            {
+                "test_subject": "1419",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.37012987012987014,
+                "auroc": 0.5265899122807018
+            },
+            {
+                "test_subject": "1544",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3568281938325991,
+                "auroc": 0.5538461538461539
+            },
+            {
+                "test_subject": "1624",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3769968051118211,
+                "auroc": 0.6517719568567027
+            },
+            {
+                "test_subject": "1629",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.40441176470588236,
+                "auroc": 0.3563811188811189
+            },
+            {
+                "test_subject": "1674",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.4206008583690987,
+                "auroc": 0.5452289023717595
+            },
+            {
+                "test_subject": "1688",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.42905405405405406,
+                "auroc": 0.5768653918260217
+            },
+            {
+                "test_subject": "1717",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.4230769230769231,
+                "auroc": 0.4897794513179129
+            },
+            {
+                "test_subject": "1818",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.36893203883495146,
+                "auroc": 0.5568009529997835
+            },
+            {
+                "test_subject": "1892",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.41964285714285715,
+                "auroc": 0.6247701602311532
+            },
+            {
+                "test_subject": "1929",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.35855263157894735,
+                "auroc": 0.6603371026242799
+            },
+            {
+                "test_subject": "1933",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.36065573770491804,
+                "auroc": 0.6693582887700534
+            },
+            {
+                "test_subject": "1936",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3568281938325991,
+                "auroc": 0.5511870845204179
+            },
+            {
+                "test_subject": "1953",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3543046357615894,
+                "auroc": 0.596590909090909
+            },
+            {
+                "test_subject": "1981",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.4583333333333333,
+                "auroc": 0.33444444444444443
+            }
+        ],
+        "aggregates": {
+            "bal_acc_mean": 0.5,
+            "bal_acc_std": 0.0,
+            "f1_mean": 0.39159310147766613,
+            "f1_std": 0.03063825911402371,
+            "auroc_mean": 0.5470935788686846,
+            "auroc_std": 0.09660935860339435
+        }
+    }
+}

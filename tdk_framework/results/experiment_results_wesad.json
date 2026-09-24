@@ -1,0 +1,311 @@
+{
+    "zero_shot": {
+        "paradigm": "zero_shot",
+        "folds": [
+            {
+                "test_subject": "S10",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3854166666666667,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S11",
+                "balanced_acc": 1.0,
+                "macro_f1": 1.0,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S13",
+                "balanced_acc": 0.775,
+                "macro_f1": 0.8018975332068312,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S14",
+                "balanced_acc": 1.0,
+                "macro_f1": 1.0,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S15",
+                "balanced_acc": 0.5476190476190477,
+                "macro_f1": 0.4848059841047218,
+                "auroc": 0.9292149292149292
+            },
+            {
+                "test_subject": "S16",
+                "balanced_acc": 1.0,
+                "macro_f1": 1.0,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S17",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3854166666666667,
+                "auroc": 0.8808353808353808
+            },
+            {
+                "test_subject": "S2",
+                "balanced_acc": 0.5358187134502924,
+                "macro_f1": 0.5209059233449478,
+                "auroc": 0.4283625730994153
+            },
+            {
+                "test_subject": "S3",
+                "balanced_acc": 0.9083333333333333,
+                "macro_f1": 0.9038131226382686,
+                "auroc": 0.9638888888888889
+            },
+            {
+                "test_subject": "S4",
+                "balanced_acc": 0.9473684210526316,
+                "macro_f1": 0.9590643274853801,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S5",
+                "balanced_acc": 0.6842105263157895,
+                "macro_f1": 0.575682382133995,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S6",
+                "balanced_acc": 0.9189189189189189,
+                "macro_f1": 0.8906649616368286,
+                "auroc": 0.9716216216216216
+            },
+            {
+                "test_subject": "S7",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.25333333333333335,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S8",
+                "balanced_acc": 0.8571428571428572,
+                "macro_f1": 0.8791666666666667,
+                "auroc": 0.9806949806949806
+            },
+            {
+                "test_subject": "S9",
+                "balanced_acc": 0.5263157894736842,
+                "macro_f1": 0.45217391304347826,
+                "auroc": 1.0
+            }
+        ],
+        "aggregates": {
+            "bal_acc_mean": 0.7467151738204371,
+            "bal_acc_std": 0.20341986696066358,
+            "f1_mean": 0.6994894320618523,
+            "f1_std": 0.2595097152254912,
+            "auroc_mean": 0.9436412249570144,
+            "auroc_std": 0.14161389671696825
+        }
+    },
+    "intra_subject": {
+        "paradigm": "intra_subject",
+        "folds": [
+            {
+                "subject": "S10",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            },
+            {
+                "subject": "S11",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            },
+            {
+                "subject": "S13",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            },
+            {
+                "subject": "S14",
+                "balanced_acc": 0.8333333333333334,
+                "macro_f1": 0.45454545454545453,
+                "auroc": NaN
+            },
+            {
+                "subject": "S15",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            },
+            {
+                "subject": "S16",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            },
+            {
+                "subject": "S17",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            },
+            {
+                "subject": "S2",
+                "balanced_acc": 0.0,
+                "macro_f1": 0.0,
+                "auroc": NaN
+            },
+            {
+                "subject": "S3",
+                "balanced_acc": 0.5833333333333334,
+                "macro_f1": 0.3684210526315789,
+                "auroc": NaN
+            },
+            {
+                "subject": "S4",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            },
+            {
+                "subject": "S5",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            },
+            {
+                "subject": "S6",
+                "balanced_acc": 0.6666666666666666,
+                "macro_f1": 0.4,
+                "auroc": NaN
+            },
+            {
+                "subject": "S7",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            },
+            {
+                "subject": "S8",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3333333333333333,
+                "auroc": NaN
+            },
+            {
+                "subject": "S9",
+                "balanced_acc": 1.0,
+                "macro_f1": 0.5,
+                "auroc": NaN
+            }
+        ],
+        "aggregates": {
+            "bal_acc_mean": 0.8388888888888889,
+            "bal_acc_std": 0.2796602877478493,
+            "f1_mean": 0.43708665603402447,
+            "f1_std": 0.12852641236625817,
+            "auroc_mean": NaN,
+            "auroc_std": NaN
+        }
+    },
+    "few_shot": {
+        "paradigm": "few_shot",
+        "folds": [
+            {
+                "test_subject": "S10",
+                "balanced_acc": 0.8096590909090908,
+                "macro_f1": 0.8193979933110368,
+                "auroc": 0.9261363636363636
+            },
+            {
+                "test_subject": "S11",
+                "balanced_acc": 0.9285714285714286,
+                "macro_f1": 0.939799331103679,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S13",
+                "balanced_acc": 0.7424242424242424,
+                "macro_f1": 0.677407805227354,
+                "auroc": 0.9636363636363636
+            },
+            {
+                "test_subject": "S14",
+                "balanced_acc": 0.9242424242424243,
+                "macro_f1": 0.9034608378870674,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S15",
+                "balanced_acc": 0.4464285714285714,
+                "macro_f1": 0.41807432432432434,
+                "auroc": 0.23214285714285712
+            },
+            {
+                "test_subject": "S16",
+                "balanced_acc": 0.96875,
+                "macro_f1": 0.9600614439324117,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S17",
+                "balanced_acc": 0.5454545454545454,
+                "macro_f1": 0.46428571428571425,
+                "auroc": 0.9616477272727273
+            },
+            {
+                "test_subject": "S2",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.38271604938271603,
+                "auroc": 0.42784380305602715
+            },
+            {
+                "test_subject": "S3",
+                "balanced_acc": 0.775,
+                "macro_f1": 0.7914584279872785,
+                "auroc": 0.9903225806451612
+            },
+            {
+                "test_subject": "S4",
+                "balanced_acc": 0.96875,
+                "macro_f1": 0.9588709677419355,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S5",
+                "balanced_acc": 1.0,
+                "macro_f1": 1.0,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S6",
+                "balanced_acc": 0.775,
+                "macro_f1": 0.793194874060981,
+                "auroc": 1.0
+            },
+            {
+                "test_subject": "S7",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3855421686746988,
+                "auroc": 0.3223684210526315
+            },
+            {
+                "test_subject": "S8",
+                "balanced_acc": 0.875,
+                "macro_f1": 0.8485714285714285,
+                "auroc": 0.9806547619047619
+            },
+            {
+                "test_subject": "S9",
+                "balanced_acc": 0.5,
+                "macro_f1": 0.3855421686746988,
+                "auroc": 0.2302631578947368
+            }
+        ],
+        "aggregates": {
+            "bal_acc_mean": 0.7506186868686869,
+            "bal_acc_std": 0.1936373957267115,
+            "f1_mean": 0.7152255690110216,
+            "f1_std": 0.23201127169081837,
+            "auroc_mean": 0.8023344024161086,
+            "auroc_std": 0.30455303640232984
+        }
+    }
+}
