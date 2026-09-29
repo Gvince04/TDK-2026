@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, TensorDataset
 
 # Ensure the src directory is importable when the script is executed directly.
@@ -125,19 +126,39 @@ def safe_auroc(y_true: np.ndarray, y_score: np.ndarray) -> float:
         return float("nan")
 
 
+def split_stratified(samples, test_size, random_state=42):
+    indices = np.arange(len(samples))
+    labels = np.array([sample["label"] for sample in samples])
+    train_idx, test_idx = train_test_split(
+        indices,
+        test_size=test_size,
+        stratify=labels,
+        random_state=random_state,
+    )
+    train_samples = [samples[i] for i in train_idx]
+    test_samples = [samples[i] for i in test_idx]
+    return train_samples, test_samples
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run training paradigm comparison for Gated Fusion models")
     parser.add_argument("--dataset", type=Path, required=True, help="Path to a processed .pt dataset")
     args = parser.parse_args()
 
     dataset_path = args.dataset
-    dataset = torch.load(dataset_path)
+    dataset = torch.load(dataset_path, weights_only=False)
 
     if not isinstance(dataset, list):
         raise ValueError("Processed dataset must be a list of sample dictionaries")
 
     if len(dataset) == 0:
         raise ValueError("Dataset is empty")
+
+    all_labels_for_dist = [int(sample["label"]) for sample in dataset]
+    unique_labels, counts = np.unique(all_labels_for_dist, return_counts=True)
+    print("Global class distribution:")
+    for label, count in zip(unique_labels, counts):
+        print(f"  Class {label}: {count} samples")
 
     set_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -161,7 +182,8 @@ def main():
     # -----------------------------------------------------------------
     # Paradigm A: Zero-shot LOSO
     # -----------------------------------------------------------------
-    zero_shot_scores = {}
+    zero_shot_y_true_all = []
+    zero_shot_y_score_all = []
     zero_shot_models = {}
 
     for test_subj in subjects:
@@ -185,29 +207,37 @@ def main():
         zero_shot_models[test_subj] = {k: v.clone().cpu() for k, v in model.state_dict().items()}
 
         probs, targets = predict(model, test_loader, device=device)
-        auroc = safe_auroc(targets, probs)
-        zero_shot_scores[test_subj] = auroc
+        zero_shot_y_true_all.extend(targets.tolist())
+        zero_shot_y_score_all.extend(probs.tolist())
 
     # -----------------------------------------------------------------
     # Paradigm B: Intra-subject (Personalized)
     # -----------------------------------------------------------------
-    intra_scores = {}
+    intra_y_true_all = []
+    intra_y_score_all = []
 
     for subj in subjects:
         subject_samples = samples_by_subject[subj]
         n = len(subject_samples)
 
-        # Need at least two samples to split into train/test.
         if n < 2:
             continue
 
-        train_size = max(1, int(n * 0.8))
-        test_size = n - train_size
-        if test_size == 0:
+        subject_labels = np.array([sample["label"] for sample in subject_samples])
+        if len(np.unique(subject_labels)) < 2:
             continue
 
-        train_samples = subject_samples[:train_size]
-        test_samples = subject_samples[train_size:]
+        try:
+            train_samples, test_samples = split_stratified(
+                subject_samples,
+                test_size=0.2,
+                random_state=42,
+            )
+        except ValueError:
+            continue
+
+        if not train_samples or not test_samples:
+            continue
 
         train_loader = make_loader(train_samples, dynamic_dim, static_dim, shuffle=True)
         test_loader = make_loader(test_samples, dynamic_dim, static_dim, shuffle=False)
@@ -216,13 +246,14 @@ def main():
         model = train_model(model, train_loader, device=device)
 
         probs, targets = predict(model, test_loader, device=device)
-        auroc = safe_auroc(targets, probs)
-        intra_scores[subj] = auroc
+        intra_y_true_all.extend(targets.tolist())
+        intra_y_score_all.extend(probs.tolist())
 
     # -----------------------------------------------------------------
     # Paradigm C: Few-shot (Fine-tuning)
     # -----------------------------------------------------------------
-    few_shot_scores = {}
+    few_shot_y_true_all = []
+    few_shot_y_score_all = []
 
     for subj in subjects:
         base_state = zero_shot_models.get(subj)
@@ -235,13 +266,21 @@ def main():
         if n < 2:
             continue
 
-        calibration_size = max(1, int(n * 0.2))
-        test_size = n - calibration_size
-        if test_size == 0:
+        subject_labels = np.array([sample["label"] for sample in subject_samples])
+        if len(np.unique(subject_labels)) < 2:
             continue
 
-        calibration_samples = subject_samples[:calibration_size]
-        test_samples = subject_samples[calibration_size:]
+        try:
+            calibration_samples, test_samples = split_stratified(
+                subject_samples,
+                test_size=0.8,
+                random_state=42,
+            )
+        except ValueError:
+            continue
+
+        if not calibration_samples or not test_samples:
+            continue
 
         calib_loader = make_loader(calibration_samples, dynamic_dim, static_dim, shuffle=True)
         test_loader = make_loader(test_samples, dynamic_dim, static_dim, shuffle=False)
@@ -251,16 +290,21 @@ def main():
         model = train_model(model, calib_loader, epochs=10, device=device)
 
         probs, targets = predict(model, test_loader, device=device)
-        auroc = safe_auroc(targets, probs)
-        few_shot_scores[subj] = auroc
+        few_shot_y_true_all.extend(targets.tolist())
+        few_shot_y_score_all.extend(probs.tolist())
 
-    def avg(scores_dict):
-        values = [v for v in scores_dict.values() if not (isinstance(v, float) and math.isnan(v))]
-        return float(np.mean(values)) if values else float("nan")
+    # Convert global predictions to numpy arrays for evaluation.
+    zero_shot_y_true_all = np.array(zero_shot_y_true_all)
+    zero_shot_y_score_all = np.array(zero_shot_y_score_all)
+    intra_y_true_all = np.array(intra_y_true_all)
+    intra_y_score_all = np.array(intra_y_score_all)
+    few_shot_y_true_all = np.array(few_shot_y_true_all)
+    few_shot_y_score_all = np.array(few_shot_y_score_all)
 
-    avg_zero_shot = avg(zero_shot_scores)
-    avg_intra = avg(intra_scores)
-    avg_few_shot = avg(few_shot_scores)
+    # Compute final global AUROC for each paradigm.
+    avg_zero_shot = safe_auroc(zero_shot_y_true_all, zero_shot_y_score_all)
+    avg_intra = safe_auroc(intra_y_true_all, intra_y_score_all)
+    avg_few_shot = safe_auroc(few_shot_y_true_all, few_shot_y_score_all)
 
     # -----------------------------------------------------------------
     # Save and print summary
@@ -283,7 +327,7 @@ def main():
 
     print("\nParadigm AUROC Summary")
     print("-" * 40)
-    print(f"{'Paradigm':<20}{'Average AUROC':<20}")
+    print(f"{'Paradigm':<20}{'Global AUROC':<20}")
     print(f"{'Zero-shot (LOSO)':<20}{avg_zero_shot:<20.4f}")
     print(f"{'Intra-subject':<20}{avg_intra:<20.4f}")
     print(f"{'Few-shot':<20}{avg_few_shot:<20.4f}")

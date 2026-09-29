@@ -1,0 +1,8 @@
+{
+    "dataset": "tdk_framework/data/processed/swell_dataset.pt",
+    "average_auroc": {
+        "zero_shot": 0.5732310517735912,
+        "intra_subject": 0.8876737160120846,
+        "few_shot": 0.7304919803064576
+    }
+}
