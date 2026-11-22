@@ -1,0 +1,27 @@
+=== cognitive_load_dataset (N=20, ablakok=4041) ===
+Statikus jellemzo: feladatonkent valtozo kontextus (nem demografiai)
+Szintek eloszlasa:
+  0: 1068 ablak (26.4%)
+  1: 1080 ablak (26.7%)
+  2: 959 ablak (23.7%)
+  3: 934 ablak (23.1%)
+Resztvevok, akik minden szintet megeltek: 17 / 20
+Egy resztvevore juto egyedi szintek: atlag 3.85, min 3, max 4
+
+=== swell_dataset (N=25) ===
+Életkor: 25.00 ± 3.32 év | Tartomány: [21, 38]
+Medián: 24.0 | IQR: [24.0, 26.0]
+Nemek:
+  Male: 17
+  Female: 8
+Egyedi (életkor, nem) kombinációk száma: 14 / 25
+Egyedi statikus vektorok száma: 14 / 25
+
+=== WESAD (raw readme) (N=15) ===
+Életkor: 27.47 ± 2.45 év | Tartomány: [24, 35]
+Medián: 27.0 | IQR: [26.5, 28.0]
+Nemek:
+  Male: 12
+  Female: 3
+Egyedi (életkor, nem) kombinációk száma: 9 / 15
+Megjegyzes: a .pt fajl statikus vektora 5 dimenzios szintetikus random ertek; a demografia a nyers readme fajlokbol szarmazik.
